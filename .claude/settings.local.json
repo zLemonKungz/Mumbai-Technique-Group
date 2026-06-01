@@ -5,7 +5,14 @@
       "mcp__plugin_exa_exa__web_fetch_exa",
       "WebFetch",
       "Read",
-      "Edit"
+      "Edit",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
+  },
+  "enabledPlugins": {
+    "php-lsp@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
   }
 }
