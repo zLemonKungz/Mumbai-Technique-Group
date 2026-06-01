@@ -218,6 +218,13 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 
+    // Simple HTML sanitizer to prevent XSS
+    function sanitizeHTML(str) {
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+    }
+
     // Show notification
     function showNotification(message, type = 'info') {
         // Create notification element
@@ -503,9 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         aboutTitle.textContent = aboutData.data.title;
                     }
 
-                    // Set content
+                    // Set content - sanitize HTML to prevent XSS
                     if (aboutData.data.content && aboutContent) {
-                        aboutContent.innerHTML = aboutData.data.content;
+                        aboutContent.innerHTML = sanitizeHTML(aboutData.data.content);
                     }
                 }
             }
