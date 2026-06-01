@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelTest Team | Creative Agency</title>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ionicons 5.5.2 -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>PixelTest Team</h1>
+                    <p>Creative Agency</p>
+                </div>
+                <div class="header-actions">
+                    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                        <ion-icon name="menu-outline"></ion-icon>
+                    </button>
+                    <button id="teamSelectorBtn" class="team-selector-btn" aria-label="Select Team Member">
+                        <ion-icon name="people-outline"></ion-icon>
+                        <span>Team</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Nav Tabs -->
+            <nav class="tabs">
+                <button class="tab active" data-section="about">About</button>
+                <button class="tab" data-section="team">Team</button>
+                <button class="tab" data-section="portfolio">Portfolio</button>
+                <button class="tab" data-section="blog">Blog</button>
+                <button class="tab" data-section="contact">Contact</button>
+            </nav>
+        </header>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-header">
+                    <h2>Team</h2>
+                    <button id="closeSidebar" class="close-sidebar" aria-label="Close Sidebar">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </div>
+                <div id="teamList" class="team-list">
+                    <!-- Team members will be populated here by JavaScript -->
+                </div>
+                <div class="socials">
+                    <a href="#" aria-label="Twitter"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="#" aria-label="LinkedIn"><ion-icon name="logo-linkedin"></ion-icon></a>
+                    <a href="#" aria-label="GitHub"><ion-icon name="logo-github"></ion-icon></a>
+                    <a href="#" aria-label="Instagram"><ion-icon name="logo-instagram"></ion-icon></a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Loading Overlay -->
+            <div id="loadingOverlay" class="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <!-- About Section -->
+            <article id="about" class="section active">
+                <h2 class="section-title">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                    About Us
+                </h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p class="lead">
+                            We are a passionate team of designers, developers, and creative thinkers dedicated to crafting exceptional digital experiences that drive results.
+                        </p>
+                        <p>
+                            Our collaborative approach combines cutting-edge technology with artistic vision to deliver websites, applications, and brand experiences that not only look stunning but also perform exceptionally well across all devices and platforms.
+                        </p>
+                        <div class="mission-values">
+                            <div class="mission">
+                                <h3>Our Mission</h3>
+                                <p>To empower businesses through innovative digital solutions that combine creativity, functionality, and measurable results.</p>
+                            </div>
+                            <div class="values">
+                                <h3>Our Values</h3>
+                                <ul>
+                                    <li><ion-icon name="heart-outline"></ion-icon> Creativity & Innovation</li>
+                                    <li><ion-icon name="shield-checkmark-outline"></ion-icon> Quality & Reliability</li>
+                                    <li><ion-icon name="people-outline"></ion-icon> Collaboration & Teamwork</li>
+                                    <li><ion-icon name="trending-up-outline"></ion-icon> Growth & Improvement</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-stats">
+                        <h3>Our Impact</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">150+</div>
+                                <div class="stat-label">Projects Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">10+</div>
+                                <div class="stat-label">Team Members</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">5+</div>
+                                <div class="stat-label">Years Experience</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">98%</div>
+                                <div class="stat-label">Client Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Team Section -->
+            <article id="team" class="section">
+                <h2 class="section-title">
+                    <ion-icon name="people-outline"></ion-icon>
+                    Our Team
+                </h2>
+                <div class="team-filters">
+                    <button class="filter-btn active" data-filter="all">All Members</button>
+                    <button class="filter-btn" data-filter="design">Design</button>
+                    <button class="filter-btn" data-filter="development">Development</button>
+                    <button class="filter-btn" data-filter="marketing">Marketing</button>
+                </div>
+                <div id="teamGrid" class="team-grid">
+                    <!-- Team member cards will be populated here by JavaScript -->
+                </div>
+            </article>
+
+            <!-- Portfolio Section -->
+            <article id="portfolio" class="section">
+                <h2 class="section-title">
+                    <ion-icon name="folder-open-outline"></ion-icon>
+                    Portfolio
+                </h2>
+                <div class="portfolio-filters">
+                    <button class="filter-btn active" data-filter="all">All Projects</button>
+                    <button class="filter-btn" data-filter="web">Web Design</button>
+                    <button class="filter-btn" data-filter="app">Mobile Apps</button>
+                    <button class="filter-btn" data-filter="branding">Branding</button>
+                    <button class="filter-btn" data-filter="ecommerce">E-commerce</button>
+                </div>
+                <div id="portfolioGrid" class="portfolio-grid">
+                    <!-- Portfolio items will be populated here by JavaScript -->
+                </div>
+            </article>
+
+            <!-- Blog Section -->
+            <article id="blog" class="section">
+                <h2 class="section-title">
+                    <ion-icon name="book-outline"></ion-icon>
+                    Blog & Insights
+                </h2>
+                <div id="blogGrid" class="blog-grid">
+                    <!-- Blog posts will be populated here by JavaScript -->
+                </div>
+            </article>
+
+            <!-- Contact Section -->
+            <article id="contact" class="section">
+                <h2 class="section-title">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                    Get In Touch
+                </h2>
+                <form id="contactForm" action="contact.php" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required placeholder="Project Inquiry">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" required placeholder="Tell us about your project..."></textarea>
+                    </div>
+                    <button type="submit" id="submitBtn" class="btn-primary">
+                        <ion-icon name="paper-plane-outline"></ion-icon>
+                        Send Message
+                    </button>
+                    <div id="formResponse" class="form-response"></div>
+                </form>
+            </article>
+        </main>
+    </div>
+
+    <!-- Team Member Modal -->
+    <div id="teamMemberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"></h2>
+                <button id="closeTeamModal" class="close-modal" aria-label="Close Modal">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="team-member-details">
+                    <div class="member-avatar">
+                        <img src="" alt="Team Member Avatar" class="modal-avatar-img">
+                    </div>
+                    <div class="member-info">
+                        <h3 class="member-name"></h3>
+                        <p class="member-role"></p>
+                        <p class="member-bio"></p>
+                    </div>
+                </div>
+                <div class="member-tabs">
+                    <button class="tab-btn active" data-tab="skills">Skills</button>
+                    <button class="tab-btn" data-tab="portfolio">Portfolio</button>
+                    <button class="tab-btn" data-tab="blog">Blog Posts</button>
+                </div>
+                <div class="tab-content">
+                    <div id="skillsTab" class="tab-pane active">
+                        <div class="skills-section">
+                            <h4>Technical Skills</h4>
+                            <div class="skill-bars" id="memberSkills"></div>
+                        </div>
+                    </div>
+                    <div id="portfolioTab" class="tab-pane">
+                        <h4>Featured Projects</h4>
+                        <div class="mini-portfolio-grid" id="memberPortfolio"></div>
+                    </div>
+                    <div id="blogTab" class="tab-pane">
+                        <h4>Recent Articles</h4>
+                        <div class="blog-list" id="memberBlog"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Mode Indicator (shown when in edit mode) -->
+    <div id="editModeIndicator" class="edit-mode-indicator">
+        <span class="edit-mode-dot"></span>
+        <span>Edit Mode Active</span>
+        <button id="exitEditMode" class="exit-edit-mode" aria-label="Exit Edit Mode">
+            <ion-icon name="log-out-outline"></ion-icon>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
