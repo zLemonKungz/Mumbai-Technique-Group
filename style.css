@@ -4,8 +4,8 @@
     --surface-light: hsl(0, 0%, 18%);
     --text-primary: hsl(0, 0%, 95%);
     --text-secondary: hsl(0, 0%, 70%);
-    --accent: hsl(45, 100%, 72%);
-    --accent-dark: hsl(45, 54%, 58%);
+    --accent: hsl(120, 70%, 40%);
+    --accent-dark: hsl(120, 60%, 30%);
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     --transition: all 0.3s ease;
     --border-radius: 8px;
