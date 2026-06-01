@@ -59,6 +59,16 @@ CREATE TABLE IF NOT EXISTS team_settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Contact Form Submissions Table
+CREATE TABLE IF NOT EXISTS contact_form_submissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    subject VARCHAR(255),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert default settings
 INSERT IGNORE INTO team_settings (`key`, `value`) VALUES
 ('about_title', 'About Us'),
@@ -75,3 +85,4 @@ CREATE INDEX idx_team_portfolio_featured ON team_portfolio(featured);
 CREATE INDEX idx_team_blog_team_member ON team_blog(team_member_id);
 CREATE INDEX idx_team_blog_category ON team_blog(category);
 CREATE INDEX idx_team_blog_featured ON team_blog(featured);
+CREATE INDEX idx_contact_submissions_created ON contact_form_submissions(created_at);
