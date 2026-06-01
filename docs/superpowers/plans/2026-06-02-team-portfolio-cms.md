@@ -533,3 +533,373 @@ Actually, let's test differently - we'll commit and test manually later.
 git add includes/auth.php api/auth/login.php api/auth/logout.php
 git commit -m "feat: add authentication system"
 ```
+
+### Task 4: Team members API endpoints
+
+**Files:**
+- Create: `api/team/index.php` (GET all team members)
+- Create: `api/team/show.php` (GET single team member)
+- Create: `api/team/store.php` (POST new team member)
+- Create: `api/team/update.php` (PUT update team member)
+- Create: `api/team/delete.php` (DELETE team member)
+- Modify: None
+
+- [ ] **Step 1: Write the failing test**
+
+Create test script for team API:
+```php
+<?php
+// test_team_api.php
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
+// Test that we can at least include the files
+if (!isset($GLOBALS['db'])) {
+    throw new Exception('Database connection not available');
+}
+echo "Team API dependencies loaded";
+?>
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `php test_team_api.php`
+Expected: Should fail with "failed to open stream" for missing includes
+
+- [ ] **Step 3: Write GET all team members endpoint**
+
+Create `api/team/index.php`:
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once '../../includes/db.php';
+require_once '../../includes/functions.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    sendErrorResponse('Method not allowed', 405);
+}
+
+try {
+    global $db;
+    $stmt = $db->prepare("SELECT id, name, role, avatar_url, email FROM team_members ORDER BY name");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $teamMembers = [];
+    while ($row = $result->fetch_assoc()) {
+        $teamMembers[] = $row;
+    }
+    
+    sendSuccessResponse('Team members retrieved', ['team_members' => $teamMembers]);
+} catch (Exception $e) {
+    sendErrorResponse('Database error: ' . $e->getMessage(), 500);
+}
+?>
+```
+
+- [ ] **Step 4: Write GET single team member endpoint**
+
+Create `api/team/show.php`:
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once '../../includes/db.php';
+require_once '../../includes/functions.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    sendErrorResponse('Method not allowed', 405);
+}
+
+// Get ID from URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    sendErrorResponse('Valid team member ID is required', 400);
+}
+
+try {
+    global $db;
+    $stmt = $db->prepare("SELECT * FROM team_members WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        sendErrorResponse('Team member not found', 404);
+    }
+    
+    $teamMember = $result->fetch_assoc();
+    
+    // Parse JSON fields for easier frontend consumption
+    $jsonFields = ['social_links', 'skills', 'portfolio_items', 'blog_posts'];
+    foreach ($jsonFields as $field) {
+        if (isset($teamMember[$field]) && $teamMember[$field]) {
+            $teamMember[$field] = json_decode($teamMember[$field], true);
+        } else {
+            $teamMember[$field] = [];
+        }
+    }
+    
+    sendSuccessResponse('Team member retrieved', ['team_member' => $teamMember]);
+} catch (Exception $e) {
+    sendErrorResponse('Database error: ' . $e->getMessage(), 500);
+}
+?>
+```
+
+- [ ] **Step 5: Write CREATE team member endpoint**
+
+Create `api/team/store.php`:
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once '../../includes/db.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/auth.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    sendErrorResponse('Method not allowed', 405);
+}
+
+// Require admin authentication
+requireAdminLogin();
+
+// Get JSON data
+$data = json_decode(file_get_contents('php://input'), true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    sendErrorResponse('Invalid JSON');
+}
+
+// Validate required fields
+if (!isset($data['name']) || empty($data['name'])) {
+    sendErrorResponse('Name is required');
+}
+if (!isset($data['role']) || empty($data['role'])) {
+    sendErrorResponse('Role is required');
+}
+if (!isset($data['bio']) || empty($data['bio'])) {
+    sendErrorResponse('Bio is required');
+}
+
+// Sanitize input data
+$sanitized = sanitizeInput($data);
+
+// Prepare data for insertion
+$name = $sanitized['name'];
+$role = $sanitized['role'];
+$bio = $sanitized['bio'];
+$avatar_url = isset($sanitized['avatar_url']) ? $sanitized['avatar_url'] : null;
+$email = isset($sanitized['email']) ? $sanitized['email'] : null;
+$social_links = isset($sanitized['social_links']) ? json_encode($sanitized['social_links']) : null;
+$skills = isset($sanitized['skills']) ? json_encode($sanitized['skills']) : null;
+$portfolio_items = isset($sanitized['portfolio_items']) ? json_encode($sanitized['portfolio_items']) : null;
+$blog_posts = isset($sanitized['blog_posts']) ? json_encode($sanitized['blog_posts']) : null;
+
+try {
+    global $db;
+    $stmt = $db->prepare("INSERT INTO team_members (name, role, bio, avatar_url, email, social_links, skills, portfolio_items, blog_posts) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssss", $name, $role, $bio, $avatar_url, $email, $social_links, $skills, $portfolio_items, $blog_posts);
+    $stmt->execute();
+    
+    $insertId = $stmt->insert_id;
+    
+    sendSuccessResponse('Team member created successfully', ['team_member_id' => $insertId], 201);
+} catch (Exception $e) {
+    sendErrorResponse('Database error: ' . $e->getMessage(), 500);
+}
+?>
+```
+
+- [ ] **Step 6: Write UPDATE team member endpoint**
+
+Create `api/team/update.php`:
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: PUT');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once '../../includes/db.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/auth.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+    sendErrorResponse('Method not allowed', 405);
+}
+
+// Require admin authentication
+requireAdminLogin();
+
+// Get ID from URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    sendErrorResponse('Valid team member ID is required', 400);
+}
+
+// Get JSON data
+$data = json_decode(file_get_contents('php://input'), true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    sendErrorResponse('Invalid JSON');
+}
+
+// Sanitize input data
+$sanitized = sanitizeInput($data);
+
+// Prepare data for update
+$name = isset($sanitized['name']) ? $sanitized['name'] : null;
+$role = isset($sanitized['role']) ? $sanitized['role'] : null;
+$bio = isset($sanitized['bio']) ? $sanitized['bio'] : null;
+$avatar_url = isset($sanitized['avatar_url']) ? $sanitized['avatar_url'] : null;
+$email = isset($sanitized['email']) ? $sanitized['email'] : null;
+$social_links = isset($sanitized['social_links']) ? json_encode($sanitized['social_links']) : null;
+$skills = isset($sanitized['skills']) ? json_encode($sanitized['skills']) : null;
+$portfolio_items = isset($sanitized['portfolio_items']) ? json_encode($sanitized['portfolio_items']) : null;
+$blog_posts = isset($sanitized['blog_posts']) ? json_encode($sanitized['blog_posts']) : null;
+
+// Build dynamic update query
+$updates = [];
+$params = [];
+$types = '';
+
+foreach (['name', 'role', 'bio', 'avatar_url', 'email'] as $field) {
+    if ($$field !== null) {
+        $updates[] = "$field = ?";
+        $params[] = $$field;
+        $types .= 's';
+    }
+}
+
+foreach (['social_links', 'skills', 'portfolio_items', 'blog_posts'] as $field) {
+    if ($$field !== null) {
+        $updates[] = "$field = ?";
+        $params[] = $$field;
+        $types .= 's';
+    }
+}
+
+if (empty($updates)) {
+    sendErrorResponse('No valid fields to update', 400);
+}
+
+$updates[] = "updated_at = CURRENT_TIMESTAMP";
+$params[] = $id;
+$types .= 'i';
+
+try {
+    global $db;
+    $query = "UPDATE team_members SET " . implode(', ', $updates) . " WHERE id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    
+    if ($stmt->affected_rows === 0) {
+        sendErrorResponse('Team member not found or no changes made', 404);
+    }
+    
+    sendSuccessResponse('Team member updated successfully');
+} catch (Exception $e) {
+    sendErrorResponse('Database error: ' . $e->getMessage(), 500);
+}
+?>
+```
+
+- [ ] **Step 7: Write DELETE team member endpoint**
+
+Create `api/team/delete.php`:
+```php
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
+
+require_once '../../includes/db.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/auth.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+    sendErrorResponse('Method not allowed', 405);
+}
+
+// Require admin authentication
+requireAdminLogin();
+
+// Get ID from URL
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($id <= 0) {
+    sendErrorResponse('Valid team member ID is required', 400);
+}
+
+try {
+    global $db;
+    // First check if team member exists
+    $stmt = $db->prepare("SELECT id FROM team_members WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows === 0) {
+        sendErrorResponse('Team member not found', 404);
+    }
+    
+    // Delete team member
+    $stmt = $db->prepare("DELETE FROM team_members WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    
+    sendSuccessResponse('Team member deleted successfully');
+} catch (Exception $e) {
+    sendErrorResponse('Database error: ' . $e->getMessage(), 500);
+}
+?>
+```
+
+- [ ] **Step 8: Update test to use the new endpoints**
+
+Update `test_team_api.php`:
+```php
+<?php
+// test_team_api.php
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
+// Test that we can at least include the files
+if (!isset($GLOBALS['db'])) {
+    throw new Exception('Database connection not available');
+}
+echo "Team API dependencies loaded";
+
+// Test that files exist
+$files = [
+    '../api/team/index.php',
+    '../api/team/show.php',
+    '../api/team/store.php',
+    '../api/team/update.php',
+    '../api/team/delete.php'
+];
+
+foreach ($files as $file) {
+    if (!file_exists($file)) {
+        throw new Exception("File not found: $file");
+    }
+}
+echo "All team API files exist";
+?>
+```
+
+- [ ] **Step 9: Run test to verify it passes**
+
+Run: `php test_team_api.php`
+Expected: Should show "Team API dependencies loaded" and "All team API files exist"
+
+- [ ] **Step 10: Commit team members API files**
+
+```bash
+git add api/team/index.php api/team/show.php api/team/store.php api/team/update.php api/team/delete.php
+git commit -m "feat: add team members API endpoints"
+```
