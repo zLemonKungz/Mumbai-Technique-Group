@@ -1,0 +1,12 @@
+{
+  "name": "mumbai-technique-portfolio",
+  "version": "1.0.0",
+  "description": "Team-capable portfolio system with GitHub Pages frontend and Vercel serverless functions backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
