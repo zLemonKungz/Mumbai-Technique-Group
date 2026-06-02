@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Contact form handling - UPDATED TO USE SERVERLESS FUNCTION
+        // Contact form handling
         const contactForm = document.getElementById('contactForm');
         const submitBtn = document.getElementById('submitBtn');
         const formResponse = document.getElementById('formResponse');
@@ -252,16 +252,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.textContent = 'Send Message';
             });
         });
+    }
 
-        function showResponse(message, type) {
-            formResponse.textContent = message;
-            formResponse.className = `form-response ${type}`;
-            formResponse.style.display = 'block';
-            // Hide response after 5 seconds
-            setTimeout(() => {
-                formResponse.style.display = 'none';
-            }, 5000);
-        }
+    // Show response (used by contact form)
+    function showResponse(message, type) {
+        formResponse.textContent = message;
+        formResponse.className = `form-response ${type}`;
+        formResponse.style.display = 'block';
+        // Hide response after 5 seconds
+        setTimeout(() => {
+            formResponse.style.display = 'none';
+        }, 5000);
     }
 
     // Handle hash changes for direct linking
