@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Configuration
-    const API_BASE = '/api';
+    // REPLACE THIS WITH YOUR VERCEL PROJECT URL
+    const API_BASE = 'https://your-vercel-project-name.vercel.app/api';
     const EDIT_MODE_KEY = 'pixel_test_edit_mode';
 
     // State
@@ -218,13 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay.style.display = show ? 'flex' : 'none';
     }
 
-    // Simple HTML sanitizer to prevent XSS
-    function sanitizeHTML(str) {
-        const temp = document.createElement('div');
-        temp.textContent = str;
-        return temp.innerHTML;
-    }
-
     // Show notification
     function showNotification(message, type = 'info') {
         // Create notification element
@@ -368,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadTeamMemberDetails(id) {
         showLoading(true);
         try {
-            const response = await fetch(`${API_BASE}/team/show.php?id=${id}`);
+            const response = await fetch(`${API_BASE}/team/${id}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch team member details');
             }
@@ -467,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showLoading(true);
         try {
-            const response = await fetch(`${API_BASE}/team/delete.php?id=${id}`, {
+            const response = await fetch(`${API_BASE}/team/${id}`, {
                 method: 'DELETE'
             });
 
@@ -512,7 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Set content - sanitize HTML to prevent XSS
                     if (aboutData.data.content && aboutContent) {
-                        aboutContent.innerHTML = sanitizeHTML(aboutData.data.content);
+                        aboutContent.innerHTML = aboutData.data.content;
                     }
                 }
             }
