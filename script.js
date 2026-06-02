@@ -193,6 +193,75 @@ document.addEventListener('DOMContentLoaded', () => {
                 testimonialModal.style.display = 'none';
             }
         });
+
+        // Contact form handling - UPDATED TO USE SERVERLESS FUNCTION
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formResponse = document.getElementById('formResponse');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            // Simple client-side validation (HTML5 validation is also present)
+            const name = contactForm.name.value.trim();
+            const email = contactForm.email.value.trim();
+            const subject = contactForm.subject.value.trim();
+            const message = contactForm.message.value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showResponse('Please fill in all fields.', 'error');
+                return;
+            }
+
+            // Disable submit button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            // Prepare form data
+            const formData = {
+                name: name,
+                email: email,
+                subject: subject,
+                message: message
+            };
+
+            // Send AJAX request to contact serverless function
+            fetch(`${API_BASE}/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showResponse(data.message, 'success');
+                    contactForm.reset(); // Reset form on success
+                } else {
+                    showResponse(data.message || 'An error occurred.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showResponse('Failed to connect to the server.', 'error');
+            })
+            .finally(() => {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            });
+        });
+
+        function showResponse(message, type) {
+            formResponse.textContent = message;
+            formResponse.className = `form-response ${type}`;
+            formResponse.style.display = 'block';
+            // Hide response after 5 seconds
+            setTimeout(() => {
+                formResponse.style.display = 'none';
+            }, 5000);
+        }
     }
 
     // Handle hash changes for direct linking
