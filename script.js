@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Configuration
     // REPLACE THIS WITH YOUR VERCEL PROJECT URL
-    const API_BASE = 'https://your-vercel-project-name.vercel.app/api';
+    const API_BASE = 'https://mumbai-technique-group.vercel.app/api';
     const EDIT_MODE_KEY = 'pixel_test_edit_mode';
 
     // State
@@ -233,24 +233,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showResponse(data.message, 'success');
-                    contactForm.reset(); // Reset form on success
-                } else {
-                    showResponse(data.message || 'An error occurred.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showResponse('Failed to connect to the server.', 'error');
-            })
-            .finally(() => {
-                // Re-enable submit button
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Send Message';
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showResponse(data.message, 'success');
+                        contactForm.reset(); // Reset form on success
+                    } else {
+                        showResponse(data.message || 'An error occurred.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showResponse('Failed to connect to the server.', 'error');
+                })
+                .finally(() => {
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                });
         });
     }
 
